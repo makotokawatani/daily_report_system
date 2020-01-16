@@ -95,12 +95,12 @@ button {
 	background-color: #f8d7da;
 }
 
-tawble#employee_list th {
-	widthh: 30%;
+table#employee_list th {
+	width: 30%;
 	padding: 10px 2%;
 }
 
-table#employye_list td {
+table#employee_list td {
 	width: 29%;
 	padding: 10px 2%;
 }

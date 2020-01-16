@@ -6,7 +6,7 @@
 *.war
 *.ear
 
-# maven
+# Maven
 target/
 
 # eclipse

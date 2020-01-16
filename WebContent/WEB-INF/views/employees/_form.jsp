@@ -4,7 +4,7 @@
     <div id="flush_error">
         入力内容にエラーがあります。<br />
         <c:forEach var="error" items="${errors}">
-            ・<c:out value="{errors}" /><br />
+            ・<c:out value="{error}" /><br />
         </c:forEach>
     </div>
 
@@ -14,7 +14,7 @@
 <br /><br />
 
 <label for="name">氏名</label><br />
-<input type="text" name="code" value="${employee.name }" />
+<input type="text" name="name" value="${employee.name }" />
 <br /><br />
 
 <label for="password">パスワード</label><br />
