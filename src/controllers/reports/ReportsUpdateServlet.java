@@ -3,6 +3,8 @@ package controllers.reports;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -46,6 +48,36 @@ public class ReportsUpdateServlet extends HttpServlet {
             r.setContent(request.getParameter("content"));
             r.setUpdated_at(new Timestamp(System.currentTimeMillis()));
 
+
+          //出勤時間の受け取り
+            String start_at = request.getParameter("start_at");
+            //入力して受け取った値をString型からTimestamp型へ変換
+            SimpleDateFormat sdfs = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            String strs = "2020/02/20 " + start_at + ":00";
+
+
+            try {
+                Timestamp tss = new Timestamp(sdfs.parse(strs).getTime());
+                r.setStart_at(tss);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            String end_at = request.getParameter("end_at");
+            //入力して受け取った値をString型からTimestamp型へ変換
+            SimpleDateFormat sdfe = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            String stre = "2020/02/20 " + end_at + ":00";
+
+
+            try {
+                Timestamp tse = new Timestamp(sdfe.parse(stre).getTime());
+                System.out.println(tse);
+                r.setEnd_at(tse);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             List<String> errors = ReportValidator.validate(r);
             if(errors.size() > 0) {
                 em.close();
@@ -53,6 +85,8 @@ public class ReportsUpdateServlet extends HttpServlet {
                 request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("report", r);
                 request.setAttribute("errors", errors);
+                request.setAttribute("start_at", strs);
+                request.setAttribute("end_at", stre);
 
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/reports/edit.jsp");
                 rd.forward(request, response);

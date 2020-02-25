@@ -37,6 +37,7 @@ import javax.persistence.Table;
 @Entity
 
 public class Report {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +53,14 @@ public class Report {
     @Column(name = "title", length = 255, nullable = false)
     private String title;
 
+    @Column(name = "start_at", nullable = false)
+    private Timestamp start_at;
+
+    @Column(name = "end_at", nullable = false)
+    private Timestamp end_at;
+
+
+
     @Lob
     @Column(name = "content", nullable = false)
     private String content;
@@ -61,6 +70,8 @@ public class Report {
 
     @Column(name = "updated_at", nullable = false)
     private Timestamp updated_at;
+
+
 
     public Integer getId() {
         return id;
@@ -94,6 +105,7 @@ public class Report {
         this.title = title;
     }
 
+
     public String getContent() {
         return content;
     }
@@ -101,6 +113,23 @@ public class Report {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public Timestamp getStart_at() {
+        return start_at;
+    }
+
+    public void setStart_at(Timestamp start_at) {
+        this.start_at = start_at;
+    }
+
+    public Timestamp getEnd_at() {
+        return end_at;
+    }
+
+    public void setEnd_at(Timestamp end_at) {
+        this.end_at = end_at;
+    }
+
 
     public Timestamp getCreated_at() {
         return created_at;

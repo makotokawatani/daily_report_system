@@ -3,6 +3,8 @@ package controllers.reports;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -23,7 +25,7 @@ import utils.DBUtil;
  */
 @WebServlet("/reports/create")
 public class ReportsCreateServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -33,21 +35,22 @@ public class ReportsCreateServlet extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    String _token = (String)request.getParameter("_token");
-        if(_token != null && _token.equals(request.getSession().getId())) {
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String _token = (String) request.getParameter("_token");
+        if (_token != null && _token.equals(request.getSession().getId())) {
             EntityManager em = DBUtil.createEntityManager();
 
             Report r = new Report();
 
-            r.setEmployee((Employee)request.getSession().getAttribute("login_employee"));
+            r.setEmployee((Employee) request.getSession().getAttribute("login_employee"));
 
             Date report_date = new Date(System.currentTimeMillis());
             String rd_str = request.getParameter("report_date");
-            if(rd_str != null && !rd_str.equals("")) {
+            if (rd_str != null && !rd_str.equals("")) {
                 report_date = Date.valueOf(request.getParameter("report_date"));
             }
             r.setReport_date(report_date);
@@ -59,13 +62,44 @@ public class ReportsCreateServlet extends HttpServlet {
             r.setCreated_at(currentTime);
             r.setUpdated_at(currentTime);
 
+            //出勤時間の受け取り
+            String start_at = request.getParameter("start_at");
+            //入力して受け取った値をString型からTimestamp型へ変換
+            SimpleDateFormat sdfs = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            String strs = "2020/02/20 " + start_at + ":00";
+            
+
+            try {
+                Timestamp tss = new Timestamp(sdfs.parse(strs).getTime());
+                r.setStart_at(tss);
+                
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            String end_at = request.getParameter("end_at");
+            //入力して受け取った値をString型からTimestamp型へ変換
+            SimpleDateFormat sdfe = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            String stre = "2020/02/20 " + end_at + ":00";
+            
+            
+            try {
+                Timestamp tse = new Timestamp(sdfe.parse(stre).getTime());
+                System.out.println(tse);
+                r.setEnd_at(tse);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             List<String> errors = ReportValidator.validate(r);
-            if(errors.size() > 0) {
+            if (errors.size() > 0) {
                 em.close();
 
                 request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("report", r);
                 request.setAttribute("errors", errors);
+                request.setAttribute("start_at", strs);
+                request.setAttribute("end_at", stre);
 
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/reports/new.jsp");
                 rd.forward(request, response);
@@ -79,6 +113,6 @@ public class ReportsCreateServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/reports/index");
             }
         }
-	}
 
+    }
 }
